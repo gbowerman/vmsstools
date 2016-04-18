@@ -46,4 +46,6 @@ python vmssupgrade.py --resourcegroup myrg --vmssname myvmss --newversion "14.04
 ### Notes
 
 - This version only works with platform images (updates the _version_ property of the _imageReference_). Support for custom images will be added in a future version (updating the _imageUri_).
+
+- You can only update the version of a platform image. Updating the _sku_ (for example going from Ubuntu 15.10 to 16.04) is not possible. This maybe possible for VM Scale Sets in the future.
  

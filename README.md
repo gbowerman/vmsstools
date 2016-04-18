@@ -3,7 +3,15 @@ Azure VM Scale Set scripts
 
 ## vmssupgrade
 
-Tool to roll out an OS upgrade to a running VM Scale Set, one upgrade domain at a time.
+Tool to roll out an OS upgrade to a running VM Scale Set, one upgrade domain at a time. 
+
+This script performs the following steps:
+
+  1. Query the VM Scale Set model and check the current OS version.
+  2. Confirms OS upgrade with the user (unless --noprompt is used).
+  3. Updates the VMSS model to the new version. At this point no VMs have been upgraded, unless the VMSS _upgradePolicy_ property is set to "Automatic").
+  4. Does a _manualUpgrade_ on the VMs in the selected update domain (or specific VMs, depending on the command line parameters).
+  5. Waits until the VMSS provisioning state has finished updating (unless the --nowait command line parameter is used).
 
 ![vmssupgrade screenshot](./docs/vmssupgrade-screenshot.png)
 

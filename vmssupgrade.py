@@ -20,6 +20,19 @@ def usage(message):
     sys.exit(2)
 
 
+def get_vm_ids_by_ud(access_token, subscription_id, resource_group, vmssname, updatedomain):
+    instanceviewlist = azurerm.list_vmss_vm_instance_view(access_token, subscription_id, resource_group, vmssname)
+    # print(json.dumps(instanceviewlist, sort_keys=False, indent=2, separators=(',', ': ')))
+
+    # loop through the instance view list, and build the vm id list of VMs in the matching UD
+    udinstancelist = []
+    for instanceView in instanceviewlist['value']:
+        vmud = instanceView['properties']['instanceView']['platformUpdateDomain']
+        if str(vmud) == updatedomain:
+            udinstancelist.append(instanceView['instanceId'])
+    udinstancelist.sort()
+    return udinstancelist
+
 def main(argv):
     # switches to determine program behavior
     noprompt = False             # go ahead and upgrade without waiting for confirmation when True
@@ -129,16 +142,7 @@ def main(argv):
     if upgrademode == 'updatedomain':
         # list the VMSS VM instance views to determine their update domains
         print("Examining the scale set..")
-        instanceviewlist = azurerm.list_vmss_vm_instance_view(access_token, subscription_id, resource_group, vmssname)
-        # print(json.dumps(instanceviewlist, sort_keys=False, indent=2, separators=(',', ': ')))
-
-        # loop through the instance view list, and build the vm id list of VMs in the matching UD
-        udinstancelist = []
-        for instanceView in instanceviewlist['value']:
-            vmud = instanceView['properties']['instanceView']['platformUpdateDomain']
-            if str(vmud) == updatedomain:
-                udinstancelist.append(instanceView['instanceId'])
-        udinstancelist.sort()
+        udinstancelist = get_vm_ids_by_ud(access_token, subscription_id, resource_group, vmssname, updatedomain)
         print('VM instances in UD: ' + str(updatedomain) + ' to upgrade:')
         print(udinstancelist)
         vmids = json.dumps(udinstancelist)

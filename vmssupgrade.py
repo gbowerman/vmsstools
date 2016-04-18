@@ -12,11 +12,13 @@ import time
 
 def usage(message):
     print(message)
-    print('usage: vmssupgrade -r rgname -s vmssname -n newversion {-u updatedomain|-i vmid|-l vmlist} [-y][-v][-h]')
+    print('usage: vmssupgrade -r rgname -s vmssname -n newversion {-u updatedomain|-i vmid|-l vmlist} [-y][-w][-v][-h]')
     print('-r, --resourcegroup <resource group name> ')
     print('-s, --vmssname <scale set name> ')
     print('-n, --newversion <new version>')
-    print('-u --updatedomain <update domain> | -i <vm id> | -l <vm list>')
+    print('-u, --updatedomain <update domain> | -i, --vmid <vm id> | -l, --vmlist <vm list>')
+    print('-w, --nowait')
+    print('-v, --verbose')
     sys.exit(2)
 
 
@@ -52,7 +54,7 @@ def main(argv):
             noprompt = True
         elif opt in ['-v', '--verbose']:
             verbose = True
-        elif opt in ['-n', '--nowait']:
+        elif opt in ['-w', '--nowait']:
             nowait = True
         elif opt in ['-s', '--vmssname']:
             vmssname = arg

@@ -98,10 +98,10 @@ def main(argv):
 
     # Load Azure app defaults
     try:
-        with open('azurermconfig.json') as configFile:
+        with open('vmssconfig.json') as configFile:
             configdata = json.load(configFile)
     except FileNotFoundError:
-        print("Error: Expecting vmssConfig.json in current folder")
+        print("Error: Expecting vmssconfig.json in current folder")
         sys.exit()
 
     tenant_id = configdata['tenantId']

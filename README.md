@@ -42,3 +42,8 @@ python vmssupgrade.py --resourcegroup myrg --vmssname myvmss --newversion "14.04
 **Upgrade an arbitrary list of VMs in a VM Scale Set**
 
 python vmssupgrade.py --resourcegroup myrg --vmssname myvmss --newversion "14.04.201507060" --vmlist '["1","2","3","4"]'
+
+### Notes
+
+- This version only works with platform images (updates the _version_ property of the _imageReference_). Support for custom images will be added in a future version (updating the _imageUri_).
+ 

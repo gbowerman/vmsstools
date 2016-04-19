@@ -35,6 +35,10 @@ vmssupgrade.py --resourcegroup myrg --vmssname myvmss --newversion "14.04.201506
 
 python vmssupgrade.py --resourcegroup myrg --vmssname myvmss --newversion "14.04.201507060" --updatedomain 0
 
+**Upgrading a custom image URI in upgrade domain 0 of a VM Scale Set**
+
+python vmssupgrade.py --resourcegroup myrg --vmssname myvmss --customuri "path_to_custom_image" --updatedomain 0
+
 **Start an upgrade but don't wait for it to complete**
 
 python vmssupgrade.py --resourcegroup myrg --vmssname myvmss --newversion "14.04.201507060" --updatedomain 0 --nowait
@@ -49,7 +53,7 @@ python vmssupgrade.py --resourcegroup myrg --vmssname myvmss --newversion "14.04
 
 ### Notes
 
-- This version only works with platform images (updates the _version_ property of the _imageReference_). Support for custom images will be added in a future version (updating the _imageUri_).
+- This script is designed to work with both platform images (updates the _version_ property of the _imageReference_) and custom images (updating the _osDisk->image->Uri_), though custom image support hasn't been tested yet. Let me know if it works :-)
 
-- You can only update the version of a platform image. Updating the _sku_ (for example going from Ubuntu 15.10 to 16.04) is not possible. This maybe possible for VM Scale Sets in the future.
+- You can update the version of a platform image. Updating the _sku_ (for example going from Ubuntu 15.10 to 16.04) is not possible. This maybe possible for VM Scale Sets in the future.
  

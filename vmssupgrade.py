@@ -15,7 +15,7 @@ def usage(message):
     print('usage: vmssupgrade -r rgname -s vmssname -n newversion {-u updatedomain|-i vmid|-l vmlist} [-y][-w][-v][-h]')
     print('-r, --resourcegroup <resource group name> ')
     print('-s, --vmssname <scale set name> ')
-    print('-n, --newversion <new version>')
+    print('-n, --newversion <new version> | -c --customuri <new custom image uri>')
     print('-u, --updatedomain <update domain> | -i, --vmid <vm id> | -l, --vmlist <vm list>')
     print('-w, --nowait')
     print('-v, --verbose')
@@ -35,18 +35,22 @@ def get_vm_ids_by_ud(access_token, subscription_id, resource_group, vmssname, up
     udinstancelist.sort()
     return udinstancelist
 
+
 def main(argv):
     # switches to determine program behavior
-    noprompt = False             # go ahead and upgrade without waiting for confirmation when True
-    nowait = False               # don't loop waiting for upgrade provisioning to complete when True
-    verbose = False              # print extra status information when True
+    noprompt = False  # go ahead and upgrade without waiting for confirmation when True
+    nowait = False  # don't loop waiting for upgrade provisioning to complete when True
+    verbose = False  # print extra status information when True
     upgrademode = 'updatedomain'  # determines whether to upgrade by domain, vmlist, or single vm
+    storagemode = 'platform'  # determines whether this is a custom or a platform image
 
     # evaluate command line arguments
     if (len(argv)) < 8:
         usage('Too few arguments.')
     try:
-        opts, args = getopt.getopt(argv, 'yvr:s:n:u:i:l:', ['resourcegroup=', 'vmssname=', 'newversion=', 'updatedomain=', 'vmid=', 'vmlist='])
+        opts, args = getopt.getopt(argv, 'yvr:s:n:c:u:i:l:',
+                                   ['resourcegroup=', 'vmssname=', 'newversion=', 'customuri', 'updatedomain=', 'vmid=',
+                                    'vmlist='])
     except getopt.GetoptError as err:
         usage(err)
     for opt, arg in opts:
@@ -62,6 +66,10 @@ def main(argv):
             resource_group = arg
         elif opt in ['-n', '--newversion']:
             newversion = arg
+            storagemode = 'platform'
+        elif opt in ['-c', '--customuri']:
+            customuri = arg
+            storagemode = 'custom'
         elif opt in ['-u', '--updatedomain']:
             updatedomain = arg
             upgrademode = 'updatedomain'
@@ -84,7 +92,10 @@ def main(argv):
     try:
         newversion
     except NameError:
-        usage('newversion not defined')
+        try:
+            customuri
+        except NameError:
+            usage('You must specify a new version for platform images or a custom uri for custom images')
     try:
         updatedomain
     except NameError:
@@ -117,33 +128,52 @@ def main(argv):
     vmssmodel = azurerm.get_vmss(access_token, subscription_id, resource_group, vmssname)
     # print(json.dumps(vmssmodel, sort_keys=False, indent=2, separators=(',', ': ')))
 
-    # check current version
-    imagereference = vmssmodel['properties']['virtualMachineProfile']['storageProfile']['imageReference']
-    print('Current image reference in Scale Set model:')
-    print(json.dumps(imagereference, sort_keys=False, indent=2, separators=(',', ': ')))
+    if storagemode == 'platform':
+        # check current version
+        imagereference = vmssmodel['properties']['virtualMachineProfile']['storageProfile']['imageReference']
+        print('Current image reference in Scale Set model:')
+        print(json.dumps(imagereference, sort_keys=False, indent=2, separators=(',', ': ')))
 
-    # compare current version with new version
-    if imagereference['version'] == newversion:
-        print('Scale Set model version is already set to ' + newversion + ', skipping model update.')
-    else:
-        if not noprompt:
-            response = input('Confirm version upgrade to: ' + newversion + ' (y/n)')
-            if response.lower() != 'y':
-                sys.exit(1)
-        # change the version
-        vmssmodel['properties']['virtualMachineProfile']['storageProfile']['imageReference']['version'] = newversion
+        # compare current version with new version
+        if imagereference['version'] == newversion:
+            print('Scale Set model version is already set to ' + newversion + ', skipping model update.')
+        else:
+            if not noprompt:
+                response = input('Confirm version upgrade to: ' + newversion + ' (y/n)')
+                if response.lower() != 'y':
+                    sys.exit(1)
+            # change the version
+            vmssmodel['properties']['virtualMachineProfile']['storageProfile']['imageReference']['version'] = newversion
+            # put the vmss model
+            updateresult = azurerm.update_vmss(access_token, subscription_id, resource_group, vmssname, vmssmodel)
+            if verbose:
+                print(updateresult)
+            print('OS version updated to ' + newversion + ' in model for VM Scale Set: ' + vmssname)
+    else:  # storagemode = custom
+        # check current uri
+        oldimageuri = vmssmodel['properties']['virtualMachineProfile']['storageProfile']['osDisk']['image']['uri']
+        print('Current image URI in Scale Set model:' + oldimageuri)
 
-        # put the vmss model
-        updateresult = azurerm.update_vmss(access_token, subscription_id, resource_group, vmssname,
-                                           json.dumps(vmssmodel))
-        if verbose:
-            print(updateresult)
-        print('OS version updated to ' + newversion + ' in model for VM Scale Set: ' + vmssname)
+        # compare current uri with new uri
+        if oldimageuri == customuri:
+            print('Scale Set model version is already set to ' + customuri + ', skipping model update.')
+        else:
+            if not noprompt:
+                response = input('Confirm uri upgrade to: ' + customuri + ' (y/n)')
+                if response.lower() != 'y':
+                    sys.exit(1)
+            # change the version
+            vmssmodel['properties']['virtualMachineProfile']['storageProfile']['osDisk']['image']['uri'] = customuri
+            # put the vmss model
+            updateresult = azurerm.update_vmss(access_token, subscription_id, resource_group, vmssname, vmssmodel)
+            if verbose:
+                print(updateresult)
+            print('Image URI updated to ' + customuri + ' in model for VM Scale Set: ' + vmssname)
 
     # build the list of VMs to upgrade depending on the upgrademode setting
     if upgrademode == 'updatedomain':
         # list the VMSS VM instance views to determine their update domains
-        print("Examining the scale set..")
+        print('Examining the scale set..')
         udinstancelist = get_vm_ids_by_ud(access_token, subscription_id, resource_group, vmssname, updatedomain)
         print('VM instances in UD: ' + str(updatedomain) + ' to upgrade:')
         print(udinstancelist)

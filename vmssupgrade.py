@@ -12,7 +12,7 @@ import time
 
 def usage(message):
     print(message)
-    print('usage: vmssupgrade -r rgname -s vmssname -n newversion {-u updatedomain|-i vmid|-l vmlist} [-y][-w][-v][-h]')
+    print('usage: vmssupgrade -r rgname -s vmssname {-n newversion | -c customuri} {-u updatedomain | -i vmid|-l vmlist} [-y][-w][-v][-h]')
     print('-r, --resourcegroup <resource group name> ')
     print('-s, --vmssname <scale set name> ')
     print('-n, --newversion <new version> | -c --customuri <new custom image uri>')

@@ -43,6 +43,10 @@ python vmssupgrade.py --resourcegroup myrg --vmssname myvmss --newversion "14.04
 
 python vmssupgrade.py --resourcegroup myrg --vmssname myvmss --newversion "14.04.201507060" --vmlist '["1","2","3","4"]'
 
+**Quick video walkthrough**
+
+[![vmssupgrade demo](https://img.youtube.com/vi/0sc9YMgvXLY/0.jpg)](https://www.youtube.com/watch?v=0sc9YMgvXLY)
+
 ### Notes
 
 - This version only works with platform images (updates the _version_ property of the _imageReference_). Support for custom images will be added in a future version (updating the _imageUri_).

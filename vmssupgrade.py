@@ -4,12 +4,12 @@
 #   oldversion = "14.04.201506100"
 #   newversion = "14.04.201507060"
 import azurerm
-import getopt
+import argparse
 import json
 import sys
 import time
 
-
+# to do: switch to argparse - see https://pymotw.com/2/argparse/
 def usage(message):
     print(message)
     print('usage: vmssupgrade -r rgname -s vmssname {-n newversion | -c customuri} {-u updatedomain | -i vmid|-l vmlist} [-y][-w][-v][-h]')
@@ -30,82 +30,56 @@ def get_vm_ids_by_ud(access_token, subscription_id, resource_group, vmssname, up
     udinstancelist = []
     for instanceView in instanceviewlist['value']:
         vmud = instanceView['properties']['instanceView']['platformUpdateDomain']
-        if str(vmud) == updatedomain:
+        if vmud == updatedomain:
             udinstancelist.append(instanceView['instanceId'])
     udinstancelist.sort()
     return udinstancelist
 
 
 def main(argv):
+    # create parse
+    argParser = argparse.ArgumentParser()
+
+    argParser.add_argument('--vmssname', '-s', required=True, action='store', help='VM Scale Set name')
+    argParser.add_argument('--resourcegroup', '-r', required=True, dest='resource_group', action='store', help='Resource group name')
+    argParser.add_argument('--newversion', '-n', dest='newversion', action='store', help='New platform image version string')
+    argParser.add_argument('--customuri', '-c', dest='customuri', action='store', help='New custom image URI string')
+    argParser.add_argument('--updatedomain', '-u', dest='updatedomain', action='store', type=int, help='Update domain (int)')
+    argParser.add_argument('--vmid', '-i', dest='vmid', action='store', type=int, help='Single VM ID (int)')
+    argParser.add_argument('--vmlist', '-l', dest='vmlist', action='store', help='List of VM IDs e.g. "["1", "2"]"')
+    argParser.add_argument('--nowait', '-w', action='store_true', default=False, help='Start upgrades and then exit without waiting')
+    argParser.add_argument('--verbose', '-v', action='store_true', default=False, help='Show additional information')
+    argParser.add_argument('-y', dest='noprompt', action='store_true', default=False, help='Do not prompt for confirmation')
+
+    args = argParser.parse_args()
+
     # switches to determine program behavior
-    noprompt = False  # go ahead and upgrade without waiting for confirmation when True
-    nowait = False  # don't loop waiting for upgrade provisioning to complete when True
-    verbose = False  # print extra status information when True
-    upgrademode = 'updatedomain'  # determines whether to upgrade by domain, vmlist, or single vm
-    storagemode = 'platform'  # determines whether this is a custom or a platform image
+    noprompt = args.noprompt  # go ahead and upgrade without waiting for confirmation when True
+    nowait = args.nowait  # don't loop waiting for upgrade provisioning to complete when True
+    verbose = args.verbose  # print extra status information when True
 
-    # evaluate command line arguments
-    if (len(argv)) < 8:
-        usage('Too few arguments.')
-    try:
-        opts, args = getopt.getopt(argv, 'yvr:s:n:c:u:i:l:',
-                                   ['resourcegroup=', 'vmssname=', 'newversion=', 'customuri', 'updatedomain=', 'vmid=',
-                                    'vmlist='])
-    except getopt.GetoptError as err:
-        usage(err)
-    for opt, arg in opts:
-        if opt == '-y':
-            noprompt = True
-        elif opt in ['-v', '--verbose']:
-            verbose = True
-        elif opt in ['-w', '--nowait']:
-            nowait = True
-        elif opt in ['-s', '--vmssname']:
-            vmssname = arg
-        elif opt in ['-r', '--resourcegroup']:
-            resource_group = arg
-        elif opt in ['-n', '--newversion']:
-            newversion = arg
-            storagemode = 'platform'
-        elif opt in ['-c', '--customuri']:
-            customuri = arg
-            storagemode = 'custom'
-        elif opt in ['-u', '--updatedomain']:
-            updatedomain = arg
-            upgrademode = 'updatedomain'
-        elif opt in ['-i', '--vmid']:
-            vmid = arg
-            upgrademode = 'vmid'
-        elif opt in ['-l', '--vmlist']:
-            vmlist = arg
-            upgrademode = 'vmlist'
+    vmssname = args.vmssname
+    resource_group = args.resource_group
+    if args.newversion is not None:
+        newversion = args.newversion
+        storagemode = 'platform'
+    elif args.customuri is not None:
+        customuri = args.customuri
+        storagemode = 'custom'
+    else:
+        argParser.error('You must specify a new version for platform images or a custom uri for custom images')
 
-    # check the required arguments were provided
-    try:
-        resource_group
-    except NameError:
-        usage('resourcegroup not defined')
-    try:
-        vmssname
-    except NameError:
-        usage('vmssname not defined')
-    try:
-        newversion
-    except NameError:
-        try:
-            customuri
-        except NameError:
-            usage('You must specify a new version for platform images or a custom uri for custom images')
-    try:
-        updatedomain
-    except NameError:
-        try:
-            vmid
-        except NameError:
-            try:
-                vmlist
-            except NameError:
-                usage('You must specify an update domain, a vm id, or a vm list')
+    if args.updatedomain is not None:
+        updatedomain = args.updatedomain
+        upgrademode = 'updatedomain'
+    elif args.vmid is not None:
+        vmid = args.vmid
+        upgrademode = 'vmid'
+    elif args.vmlist is not None:
+        vmlist = args.vmlist
+        upgrademode = 'vmlist'
+    else:
+        argParser.error('You must specify an update domain, a vm id, or a vm list')
 
     # Load Azure app defaults
     try:

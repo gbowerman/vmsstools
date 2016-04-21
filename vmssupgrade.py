@@ -9,18 +9,6 @@ import json
 import sys
 import time
 
-# to do: switch to argparse - see https://pymotw.com/2/argparse/
-def usage(message):
-    print(message)
-    print('usage: vmssupgrade -r rgname -s vmssname {-n newversion | -c customuri} {-u updatedomain | -i vmid|-l vmlist} [-y][-w][-v][-h]')
-    print('-r, --resourcegroup <resource group name> ')
-    print('-s, --vmssname <scale set name> ')
-    print('-n, --newversion <new version> | -c --customuri <new custom image uri>')
-    print('-u, --updatedomain <update domain> | -i, --vmid <vm id> | -l, --vmlist <vm list>')
-    print('-w, --nowait')
-    print('-v, --verbose')
-    sys.exit(2)
-
 
 def get_vm_ids_by_ud(access_token, subscription_id, resource_group, vmssname, updatedomain):
     instanceviewlist = azurerm.list_vmss_vm_instance_view(access_token, subscription_id, resource_group, vmssname)
@@ -36,8 +24,8 @@ def get_vm_ids_by_ud(access_token, subscription_id, resource_group, vmssname, up
     return udinstancelist
 
 
-def main(argv):
-    # create parse
+def main():
+    # create parser
     argParser = argparse.ArgumentParser()
 
     argParser.add_argument('--vmssname', '-s', required=True, action='store', help='VM Scale Set name')
@@ -93,8 +81,6 @@ def main(argv):
     app_id = configdata['appId']
     app_secret = configdata['appSecret']
     subscription_id = configdata['subscriptionId']
-    # resource_group = configdata['resourceGroup']
-    # vmssname = configdata['vmssName']
 
     access_token = azurerm.get_access_token(tenant_id, app_id, app_secret)
 
@@ -185,4 +171,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()

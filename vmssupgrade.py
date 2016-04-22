@@ -105,7 +105,7 @@ def main():
             # change the version
             vmssmodel['properties']['virtualMachineProfile']['storageProfile']['imageReference']['version'] = newversion
             # put the vmss model
-            updateresult = azurerm.update_vmss(access_token, subscription_id, resource_group, vmssname, vmssmodel)
+            updateresult = azurerm.update_vmss(access_token, subscription_id, resource_group, vmssname, json.dumps(vmssmodel))
             if verbose:
                 print(updateresult)
             print('OS version updated to ' + newversion + ' in model for VM Scale Set: ' + vmssname)
@@ -125,7 +125,7 @@ def main():
             # change the version
             vmssmodel['properties']['virtualMachineProfile']['storageProfile']['osDisk']['image']['uri'] = customuri
             # put the vmss model
-            updateresult = azurerm.update_vmss(access_token, subscription_id, resource_group, vmssname, vmssmodel)
+            updateresult = azurerm.update_vmss(access_token, subscription_id, resource_group, vmssname, json.dumps(vmssmodel))
             if verbose:
                 print(updateresult)
             print('Image URI updated to ' + customuri + ' in model for VM Scale Set: ' + vmssname)
@@ -147,7 +147,6 @@ def main():
         print('Upgrading VM IDs: ' + vmlist)
 
     # do manualupgrade on the VMs in the list
-
     upgraderesult = azurerm.upgrade_vmss_vms(access_token, subscription_id, resource_group, vmssname, vmids)
     print(upgraderesult)
 

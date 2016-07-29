@@ -101,9 +101,10 @@ def main():
             sys.exit()
 
         if extnprofile is None:
-            pass
-        else:
-            extnprofile['extensions'].append(extndata)
+            # create an extensionProfile
+            extnprofile = {'extensions':[]}
+        # add the extension definition to the list
+        extnprofile['extensions'].append(extndata)
 
     # update and apply model with the new extensionProfile
     current_vmss.update_extns(extnprofile)

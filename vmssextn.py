@@ -19,7 +19,7 @@ def main():
     argParser.add_argument('--delete', '-n', dest='extnname', action='store', help='Name of extension to delete')
     argParser.add_argument('--add', '-c', dest='extnfile', action='store',
                            help='File containing extension defintion to add')
-    argParser.add_argument('--verbose', '-v', action='store_true', default=False, help='Show additional information')
+    argParser.add_argument('--verbose', '-v', action='store_true', default=False, help='Print full extension definition')
 
     args = argParser.parse_args()
 

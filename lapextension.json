@@ -1,0 +1,16 @@
+{
+  "properties": {
+    "autoUpgradeMinorVersion": true,
+    "settings": {
+      "commandToExecute": "bash installserver.sh",
+      "fileUris": [
+        "https://raw.githubusercontent.com/gbowerman/azure-myriad/master/vmss-ubuntu-scale/installserver.sh",
+        "https://raw.githubusercontent.com/gbowerman/azure-myriad/master/vmss-ubuntu-scale/workserver.py"
+      ]
+    },
+    "typeHandlerVersion": "1.4",
+    "publisher": "Microsoft.OSTCExtensions",
+    "type": "CustomScriptForLinux"
+  },
+  "name": "lapextension"
+}

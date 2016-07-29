@@ -13,7 +13,7 @@ This script can:
   2. Delete an extension from a VM Scale Set by name.
   3. Add an extension to a VM Scale Set by providing a JSON file containing the properties.
   
-### Showing which extensions are insalled
+### Showing which extensions are installed
 
 Lists the extensions installed in a specified scale set, including name, publisher, version.
 

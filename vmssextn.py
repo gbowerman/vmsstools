@@ -4,11 +4,9 @@
 import argparse
 import json
 import sys
-import time
 
 import subscription
 import vmss
-import azurerm
 
 
 def main():
@@ -22,13 +20,10 @@ def main():
     argParser.add_argument('--add', '-c', dest='extnfile', action='store',
                            help='File containing extension defintion to add')
     argParser.add_argument('--verbose', '-v', action='store_true', default=False, help='Show additional information')
-    argParser.add_argument('-y', dest='noprompt', action='store_true', default=False,
-                           help='Do not prompt for confirmation')
 
     args = argParser.parse_args()
 
     # switches to determine program behavior
-    noprompt = args.noprompt  # go ahead and upgrade without waiting for confirmation when True
     verbose = args.verbose  # print extra status information when True
     vmssname = args.vmssname
     resource_group = args.resource_group

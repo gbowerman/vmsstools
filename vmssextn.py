@@ -112,7 +112,7 @@ def main():
     if current_vmss.status.status_code == 200:
         if current_vmss.upgradepolicy == 'Manual':
             print('Update in progress. Once model update completes, apply manualUpgrade to VMs.')
-            print("Note: You won't be able re-add an extension of the same name until the new model is to all VMs.")
+            print("Note: You won't be able re-add an extension of the same name until the new model is applied to all VMs.")
         else:
             print('Scale Set update in progress.')
     else:

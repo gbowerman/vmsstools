@@ -15,7 +15,9 @@ This script can:
   
 ### Showing which extensions are installed
 
-Lists the extensions installed in a specified scale set, including name, publisher, version.
+Lists the extensions installed in a specified scale set, including name, publisher, version. 
+
+Use –verbose to dump the JSON properties, which could then be saved to a file and used to add extensions to other scale sets.
 
 E.g. python vmssextn.py --resourcegroup extntest --vmssname extntest
 

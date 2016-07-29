@@ -13,6 +13,8 @@ This script can:
   2. Delete an extension from a VM Scale Set by name.
   3. Add an extension to a VM Scale Set by providing a JSON file containing the properties.
   
+Note: this tool just updates the VMSS model. After that, if the VMSS 'upgradePolicy' property is set to 'Manual', you will have to call manualUgrade on the VMs to apply the update.
+
 ### Showing which extensions are installed
 
 Lists the extensions installed in a specified scale set, including name, publisher, version. 
@@ -38,6 +40,14 @@ Delete a VM extension from a VM Scale Set by name.
 E.g. python vmssextn.py --resourcegroup extntest --vmssname extntest --delete extnname
 
 Note: this tool just updates the VMSS model. After that, if the VMSS 'upgradePolicy' property is set to 'Manual', you will have to call manualUgrade on the VMs to apply the update.
+
+### Updating an extension
+
+Updates a VM extension from a VM Scale Set by name using a JSON definition in a file.
+
+E.g. python vmssextn.py --resourcegroup extntest --vmssname extntest --update extnfile 
+
+
 
 ### Installation
 

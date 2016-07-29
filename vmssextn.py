@@ -16,9 +16,11 @@ def main():
     argParser.add_argument('--vmssname', '-s', required=True, action='store', help='VM Scale Set name')
     argParser.add_argument('--resourcegroup', '-r', required=True, dest='resource_group', action='store',
                            help='Resource group name')
-    argParser.add_argument('--delete', '-n', dest='extnname', action='store', help='Name of extension to delete')
-    argParser.add_argument('--add', '-c', dest='extnfile', action='store',
+    argParser.add_argument('--delete', '-d', dest='extnname', action='store', help='Name of extension to delete')
+    argParser.add_argument('--add', '-a', dest='extnfile', action='store',
                            help='File containing extension defintion to add')
+    argParser.add_argument('--update', '-u', dest='extnufile', action='store',
+                           help='File containing extension defintion to update')
     argParser.add_argument('--verbose', '-v', action='store_true', default=False, help='Print full extension definition')
 
     args = argParser.parse_args()
@@ -33,6 +35,9 @@ def main():
     elif args.extnfile is not None:
         extnfile = args.extnfile
         mode = 'add'
+    elif args.extnufile is not None:
+        extnfile = args.extnufile
+        mode = 'update'
     else:
         mode = 'report'
 
@@ -70,6 +75,7 @@ def main():
             print('Publisher: ' + extension['properties']['publisher'])
             print('Version: ' + extension['properties']['typeHandlerVersion'])
             if verbose:
+                print('Extension definition:\n')
                 print(json.dumps(extension, sort_keys=False, indent=2, separators=(',', ': ')))
         sys.exit()
 
@@ -85,6 +91,7 @@ def main():
             del extnprofile['extensions'][extn_index]
         else:
             print('Extension ' + extnname + ' not found.')
+            sys.exit()
 
     elif mode == 'add':
         # load the extension definition file
@@ -98,6 +105,34 @@ def main():
         if extnprofile is None:
             # create an extensionProfile
             extnprofile = {'extensions':[]}
+        # add the extension definition to the list
+        extnprofile['extensions'].append(extndata)
+
+    elif mode == 'update':
+        # load the extension definition file
+        try:
+            with open(extnfile) as extension_file:
+                extndata = json.load(extension_file)
+        except FileNotFoundError:
+            print("Error: Expecting ' + extnfile + ' in current folder (or absolute path)")
+            sys.exit()
+
+        # get the extension name to update from the file
+        extnname = extndata['name']
+
+        # for update, first delete the extension, from the list then add
+        index = 0
+        extn_index = -1
+        for extension in extnprofile['extensions']:
+            if extension['name'] == extnname:
+                extn_index = index
+            index += 1
+        if extn_index > -1:
+            # delete the extension from the list
+            del extnprofile['extensions'][extn_index]
+        else:
+            print('Extension ' + extnname + ' not found.')
+            sys.exit()
         # add the extension definition to the list
         extnprofile['extensions'].append(extndata)
 

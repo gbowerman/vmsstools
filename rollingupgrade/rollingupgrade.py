@@ -1,5 +1,5 @@
-# Rolling Upgrade - Azure VM Scale Set rolling upgrade tool
-# rollingupgrade.py - GUI component of Rolling Upgrade, tkinter based
+# VMSS Editor - Azure VM Scale Set management tool
+# vmsseditor.py - GUI component of Rolling Upgrade, tkinter based
 #  - uses vmss.py and subscription.py classes for Azure operations
 """
 Copyright (c) 2016, Guy Bowerman
@@ -61,6 +61,35 @@ def refresh_loop():
             time.sleep(10)
             vmssdetails()
         time.sleep(10)
+
+# rolling upgrade thread
+def rolling_upgrade_engine(batchsize, pausetime, vmbyfd_list):
+    global refresh_thread_running
+    # loop through all VMs
+    num_vms_to_upgrade = len(vmbyfd_list)
+    upgrade_index = 0 # running count of VMs updated or in batch to update
+    while upgrade_index < num_vms_to_upgrade:
+        # determine the next batch of VM IDs
+        batch_list = []
+        for batch_index in range(batchsize):
+            batch_list.append(vmbyfd_list[upgrade_index][0])
+            upgrade_index += 1
+            if upgrade_index == num_vms_to_upgrade:
+                break
+
+        # do an upgrade on the batch
+        print('Upgrading batch')
+        current_vmss.upgradevm(json.dumps(batch_list))
+        statusmsg(current_vmss.status)
+        refresh_thread_running = True
+
+        # wait for upgrade to complete
+        print('Starting refresh wait')
+        while (refresh_thread_running == True):
+            time.sleep(1)
+        print('Batch complete')
+        # wait for pausetime
+        time.sleep(pausetime)
 
 # start timer thread
 timer_thread = threading.Thread(target=subidkeepalive, args=())
@@ -173,7 +202,19 @@ def upgradefd():
 
 
 def rollingupgrade():
-    pass
+    batchsize = int(batchtext.get())
+    pausetime = int(pausetext.get())
+
+    # get list of VMs ordered by FD - get this by concatenating the vmss fd_dict into a single list
+    vmbyfd_list = []
+    for fdval in range(5):
+        vmbyfd_list += current_vmss.fd_dict[fdval]
+    num_vms_to_upgrade = len(vmbyfd_list) # should be the same of vmss capacity if starting in consistent state
+
+    # launch rolling update thread
+    rolling_upgrade_thread = threading.Thread(target=rolling_upgrade_engine, args=(batchsize, pausetime, vmbyfd_list,))
+    rolling_upgrade_thread.daemon = True
+    rolling_upgrade_thread.start()
 
 
 def reimagevm():
@@ -241,7 +282,7 @@ def poweroffvm():
 
 # begin tkinter components
 root = tk.Tk()  # Makes the window
-root.wm_title("VM Scale Set Rolling Upgrade")
+root.wm_title("Azure VM Scale Set Editor")
 root.geometry(geometry1)
 root.configure(background = frame_bgcolor)
 root.wm_iconbitmap('vmss.ico')

@@ -9,7 +9,7 @@ Shows CPU usage graph for a VM scale set.
 
 Usage: vmss_cpu_plot.py [-h] --vmss VMSS --resourcegroup RESOURCE_GROUP [--verbose]
 
-Shows CPU usage for the named scale set for the last hour.
+Graphs CPU usage for the named scale set for the last hour.
 
 ## vmssextn
 

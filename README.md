@@ -1,6 +1,16 @@
 # vmsstools
 Azure VM Scale Set scripts. Use at your own risk :-)
 
+## vmss_cpu_plot
+
+Shows CPU usage graph for a VM scale set.
+
+![CPU graph screenshot](./docs/cpu_graph.png)
+
+Usage: vmss_cpu_plot.py [-h] --vmss VMSS --resourcegroup RESOURCE_GROUP [--verbose]
+
+Shows CPU usage for the named scale set for the last hour.
+
 ## vmssextn
 
 Tool to read, add, remove extensions from an Azure VM Scale Set.

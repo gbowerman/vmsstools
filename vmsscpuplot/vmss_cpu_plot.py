@@ -83,7 +83,7 @@ def main():
 
     # label axis and graph
     pyplot.ylabel('CPU Percentage')
-    pyplot.xlabel('Time stamp')
+    pyplot.xlabel('Time stamp (UTC)')
     pyplot.title('Avg CPU over time for scale set: ' + vmssname)
 
     # display

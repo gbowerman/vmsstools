@@ -16,3 +16,5 @@ This tool will create a VM in the first VNET it finds in the resource group (or 
 You can provide a user and password/public key/public key file. If no authentication method provided and no default public key file found it will create a password for you.
 
 By default jumpbox.py will wait for the VM to be provisioned, unless you specify the --nowait argument.
+
+![jumpbox screenshot](../docs/jumpbox.png)

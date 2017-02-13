@@ -24,10 +24,11 @@ By default jumpbox.py will wait for the VM to be provisioned, unless you specify
 
 ### Installation
   1. Install Python 3.x.
-  2. Install the azurerm REST wrappers for Microsoft Azure: "pip install azurerm" (use --upgrade if azurerm is already installed), and matplotlib library.
+  2. Install the azurerm REST wrappers for Microsoft Azure: "pip install azurerm" (use --upgrade if azurerm is already installed).
   3. Clone this repo locally. 
   4. You need a service principal and tenant ID. See [Authenticating a service principal with Azure Resource Manager](https://azure.microsoft.com/en-us/documentation/articles/resource-group-authenticate-service-principal/) - note that "Reader" access as described in that doc is not enough. It should be "Contributor" or some other roll that allows write access.
   6. Edit azurermconfig.json in the local directory (rename azurermconfig.json.tmpl). Fill in the service principal values for your application (tenantId, appId, app secret, subscription ID).
+
 
 ## cpuload -  Random load generator for Azure VM scale set VMs
 A set of scripts to trigger a randmon CPU load against  the VMs in a scale set. Tested up to 1000 VMs.
@@ -55,6 +56,14 @@ Shows CPU usage graph for a VM scale set.
 Usage: vmss_cpu_plot.py [-h] --vmss VMSS --resourcegroup RESOURCE_GROUP [--verbose]
 
 Graphs CPU usage for the named scale set for the last hour.
+
+### Installation
+  1. Install Python 3.x.
+  2. Install the azurerm REST wrappers for Microsoft Azure: "pip install azurerm" (use --upgrade if azurerm is already installed), and matplotlib library.
+  3. Clone this repo locally. 
+  4. You need a service principal and tenant ID. See [Authenticating a service principal with Azure Resource Manager](https://azure.microsoft.com/en-us/documentation/articles/resource-group-authenticate-service-principal/) - note that "Reader" access as described in that doc is not enough. It should be "Contributor" or some other roll that allows write access.
+  6. Edit azurermconfig.json in the local directory (rename azurermconfig.json.tmpl). Fill in the service principal values for your application (tenantId, appId, app secret, subscription ID).
+
 
 ## vmssextn
 

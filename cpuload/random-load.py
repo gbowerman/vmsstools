@@ -36,7 +36,7 @@ while True:
     for i in range(machine_count):
         ipaddr_on(addrlist[i])
     time.sleep(loop_time)
-    # after time internval switch them off 
+    # after time interval switch them off 
     for j in range(machine_count):
         ipaddr_off(addrlist[j])
  

@@ -9,7 +9,7 @@ To generate a load:
    python3 getnics.py > ipaddrs
    ```
 4. Edit random-load.py to set your resource group name and scale set name.
-5. start a load running in background with:
+5. start a load running in background with
    ```bash
    nohup python3 random-load.py > random.out 2>&1 &
    ```

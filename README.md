@@ -32,7 +32,7 @@ usage: vip_swap.py [-h] --resourcegroup RESOURCE_GROUP --lb1 LB1 --lb2 LB2
 The following arguments are required: --resourcegroup/-g, --lb1/-1, --lb2/-2
 ```
 
-![vipswap screenshot](../docs/vipswap.png)
+![vipswap screenshot](./docs/vipswap.png)
 
 
 ## cpuload -  Random load generator for Azure VM scale set VMs

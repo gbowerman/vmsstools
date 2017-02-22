@@ -22,12 +22,17 @@ By default jumpbox.py will wait for the VM to be provisioned, unless you specify
 
 ![jumpbox screenshot](./docs/jumpbox.png)
 
-### Installation
-  1. Install Python 3.x.
-  2. Install the azurerm REST wrappers for Microsoft Azure: "pip install azurerm" (use --upgrade if azurerm is already installed).
-  3. Clone this repo locally. 
-  4. You need a service principal and tenant ID. See [Authenticating a service principal with Azure Resource Manager](https://azure.microsoft.com/en-us/documentation/articles/resource-group-authenticate-service-principal/) - note that "Reader" access as described in that doc is not enough. It should be "Contributor" or some other roll that allows write access.
-  6. Edit azurermconfig.json in the local directory (rename azurermconfig.json.tmpl). Fill in the service principal values for your application (tenantId, appId, app secret, subscription ID).
+## vipswap
+
+Swaps the public IP addresses between two Azure load balancers.
+
+```
+usage: vip_swap.py [-h] --resourcegroup RESOURCE_GROUP --lb1 LB1 --lb2 LB2
+                   [--verbose] [-y]
+The following arguments are required: --resourcegroup/-g, --lb1/-1, --lb2/-2
+```
+
+![vipswap screenshot](../docs/vipswap.png)
 
 
 ## cpuload -  Random load generator for Azure VM scale set VMs
@@ -56,13 +61,6 @@ Shows CPU usage graph for a VM scale set.
 Usage: vmss_cpu_plot.py [-h] --vmss VMSS --resourcegroup RESOURCE_GROUP [--verbose]
 
 Graphs CPU usage for the named scale set for the last hour.
-
-### Installation
-  1. Install Python 3.x.
-  2. Install the azurerm REST wrappers for Microsoft Azure: "pip install azurerm" (use --upgrade if azurerm is already installed), and matplotlib library.
-  3. Clone this repo locally. 
-  4. You need a service principal and tenant ID. See [Authenticating a service principal with Azure Resource Manager](https://azure.microsoft.com/en-us/documentation/articles/resource-group-authenticate-service-principal/) - note that "Reader" access as described in that doc is not enough. It should be "Contributor" or some other roll that allows write access.
-  6. Edit azurermconfig.json in the local directory (rename azurermconfig.json.tmpl). Fill in the service principal values for your application (tenantId, appId, app secret, subscription ID).
 
 
 ## vmssextn
@@ -111,16 +109,6 @@ Updates a VM extension from a VM Scale Set by name using a JSON definition in a 
 
 E.g. python vmssextn.py --resourcegroup extntest --vmssname extntest --update extnfile 
 
-
-
-### Installation
-
-  1. Install Python 3.x.
-  2. Install the azurerm REST wrappers for Microsoft Azure: "pip install azurerm" (use --upgrade if azurerm is already installed)
-  3. Clone this repo locally. In particular copy the vmssextn folder.
-  4. You need a service principal and tenant ID. See [Authenticating a service principal with Azure Resource Manager](https://azure.microsoft.com/en-us/documentation/articles/resource-group-authenticate-service-principal/) - note that "Reader" access as described in that doc is not enough. It should be "Contributor" or some other roll that allows write access.
-  6. Edit vmssconfig.json in the local directory (rename vmssconfig.json.tmpl). Fill in the service principal values for your application (tenantId, appId, app secret, subscription ID).
-  7. Run the command, e.g. python vmssextn.py
   
 ## vmssupgrade
 

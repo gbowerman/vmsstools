@@ -18,7 +18,7 @@ def main():
     # create argument parser
     argParser = argparse.ArgumentParser()
 
-    argParser.add_argument('--vmss', '-s', required=True, action='store', \
+    argParser.add_argument('--vmss', '-n', required=True, action='store', \
         help='Scale set name')
     argParser.add_argument('--resourcegroup', '-g', required=True, dest='resource_group', \
         action='store', help='Resource group name')
@@ -33,10 +33,10 @@ def main():
 
     # Load Azure app defaults
     try:
-        with open('vmssconfig.json') as configFile:    
+        with open('azurermconfig.json') as configFile:    
             configData = json.load(configFile)
     except FileNotFoundError:
-        print("Error: Expecting vmssConfig.json in current folder")
+        print("Error: Expecting azurermonfig.json in current folder")
         sys.exit()
     
     tenant_id = configData['tenantId']

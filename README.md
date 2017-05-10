@@ -1,5 +1,5 @@
 # vmsstools
-Azure VM Scale Set scripts. Use at your own risk :-)
+Azure VM Scale Set tools. Use at your own risk :-)
 
 ## jumpbox
 
@@ -62,6 +62,18 @@ Usage: vmss_cpu_plot.py [-h] --vmss VMSS --resourcegroup RESOURCE_GROUP [--verbo
 
 Graphs CPU usage for the named scale set for the last hour.
 
+
+## vmssvmname
+
+Converts a VM scale set VM hostname into a VM id. E.g.
+
+```
+> python vmssvmname.py --vmid 1146 --prefix myvmprefix
+hostname = myvmprefix0000VU
+
+> python vmssvmname.py --hostname myvmprefix0000VU
+VM ID = 1146
+```
 
 ## vmssextn
 

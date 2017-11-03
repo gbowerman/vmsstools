@@ -1,5 +1,5 @@
 # Random load generator for Azure VM scale set VMs
-A set of scripts to trigger a randmon CPU load against VMs in a scale set. This works by creating a standalone VM in the scale VNet as the scale set, and using this VM to query the internal IP addresses and send a load to them. Tested up to 1000 VMs.
+A set of scripts to trigger a random CPU load against VMs in a scale set. This works by creating a standalone VM in the scale VNet as the scale set, and using this VM to query the internal IP addresses and send a load to them. Tested up to 1000 VMs.
 
 To generate a load:
 

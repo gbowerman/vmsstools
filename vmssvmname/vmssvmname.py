@@ -9,7 +9,7 @@ import sys
 
 def hostname_to_vmid(hostname):
     # get last 6 characters and remove leading zeroes
-    hexatrig = hostname[-6:].lstrip('0')
+    hexatrig = hostname[-6:].lstrip('0').upper()
     multiplier = 1
     vmid = 0
     # reverse string and process each char

@@ -66,7 +66,7 @@ elif hostname is None:
     if vmid is None or prefix is None:
         sys.exit('Error: Provide a value for --hostname, or --vmid and --prefix, or --roleinstancename.')
     hostname = vmid_to_hostname(vmid, prefix)
-    print('hostname = ' + hostname)
+    print('hostname = ' + hostname.lower())
 else:
     if vmid is not None:
         sys.exit('Error: Provide a value for --hostname, or --vmid and --prefix, or --roleinstancename')

@@ -3,13 +3,15 @@
 #     instanceId = 1146
 #     name = myvmss_1146
 #     hostname = vmssprefix0000VU
+#     roleinstancename = aks-agentpool-33143703-vmss_128 or _aks-agentpool-33143703-vmss_128
 import argparse
 import sys
+import re
 
 
 def hostname_to_vmid(hostname):
     # get last 6 characters and remove leading zeroes
-    hexatrig = hostname[-6:].lstrip('0')
+    hexatrig = hostname[-6:].lstrip('0').upper()
     multiplier = 1
     vmid = 0
     # reverse string and process each char
@@ -35,7 +37,7 @@ def vmid_to_hostname(vmid, prefix):
             char = str(vmid_mod)
         hexatrig = char + hexatrig
         vmid = int(vmid/36) 
-    return prefix + hexatrig.zfill(6)
+    return (prefix + hexatrig.zfill(6)).lower()
 
 
 # validate command line arguments
@@ -47,19 +49,26 @@ argParser.add_argument('--prefix', '-p', required=False,
                        action='store', help='VMSS machine name prefix')
 argParser.add_argument('--vmid', '-i', type=int, required=False,
                        action='store', help='VM ID')
+argParser.add_argument('--roleinstancename', '-r', required=False,
+                       action='store', help='Role instance name')
 args = argParser.parse_args()
 
 hostname = args.hostname
 vmid = args.vmid
 prefix = args.prefix
+roleinstancename = args.roleinstancename
 
-if hostname is None:
-    if vmid is None or prefix is None:
-        sys.exit('Error: Provide a value for --hostname, or --vmid and --prefix.')
-    hostname = vmid_to_hostname(vmid, prefix)
+if roleinstancename is not None:
+    m = re.search('(aks.*vmss)_(\d+)',roleinstancename)
+    hostname = vmid_to_hostname(int(m[2]),m[1])
     print('hostname = ' + hostname)
+elif hostname is None:
+    if vmid is None or prefix is None:
+        sys.exit('Error: Provide a value for --hostname, or --vmid and --prefix, or --roleinstancename.')
+    hostname = vmid_to_hostname(vmid, prefix)
+    print('hostname = ' + hostname.lower())
 else:
     if vmid is not None:
-        sys.exit('Error: Provide a value for --hostname, or --vmid and --prefix. Not both.')
+        sys.exit('Error: Provide a value for --hostname, or --vmid and --prefix, or --roleinstancename')
     vmid = hostname_to_vmid(hostname)
     print('VM ID = ' + str(vmid))
